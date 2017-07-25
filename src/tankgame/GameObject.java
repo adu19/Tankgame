@@ -29,6 +29,7 @@ public class GameObject implements Observer{
     
     // Game object exploding.
     protected boolean boom;
+    private boolean show;
     
     public GameObject(Image img, int x, int y, int speed) {
         this.img = img;
@@ -51,16 +52,16 @@ public class GameObject implements Observer{
         this.x = x;
     }
     
-     public void setY(int y){
+    public void setY(int y){
         this.y = y;
-    }
+    }  
      
     public int getWidth() {
         return this.width;
     }
     public int getHeight(){
         return this.height;
-    }
+    }   
     
      public void draw(ImageObserver obs, Graphics2D g2d){
          g2d.drawImage(img, x, y, obs);    

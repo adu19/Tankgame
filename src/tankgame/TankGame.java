@@ -89,10 +89,10 @@ public class TankGame extends JApplet implements Runnable{
             smallExplosion[5] = ImageIO.read(this.getClass().getClassLoader().getResource(("Resources/Explosion_small6.png")));
 
             // WASD movement. C fire.
-            player1 = new Tank(tankP1, 3, 35, 35, 4, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_W,KeyEvent.VK_S, KeyEvent.VK_C, playerID1);
+            player1 = new Tank(tankP1, 3, 35, 35, 4, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_SPACE, playerID1);
 
             // IJKL Movement. N fire.
-            player2 = new Tank(tankP2, 3, 795, 475, 4, KeyEvent.VK_J, KeyEvent.VK_L, KeyEvent.VK_I, KeyEvent.VK_K, KeyEvent.VK_N, playerID2);
+            player2 = new Tank(tankP2, 3, 795, 475, 4, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_ENTER, playerID2);
          
             if(player1 == null)
                 System.out.println("Player 1 is null");   
@@ -234,7 +234,7 @@ public class TankGame extends JApplet implements Runnable{
             for(int i = 0; i < player1.getBulletList().size(); i++) {
                 if(player1.getBulletList().get(i).getShow()) {
                     player1.getBulletList().get(i).draw(this, g2);
-                    player1.getBulletList().get(i).update();                    
+                    player1.getBulletList().get(i).update();    
                 }
                 else {
                     player1.getBulletList().remove(i);
@@ -249,7 +249,7 @@ public class TankGame extends JApplet implements Runnable{
                     player2.getBulletList().get(i).update();
                 }
                 else {
-                    player2.getBulletList().remove(i);
+                    player2.getBulletList().remove(i);                  
                 }
             }
         } 
