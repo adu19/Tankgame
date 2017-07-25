@@ -1,12 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- *
- * @author Albert
+ * Tank.java
+ * 
+ * The tank class keeps track of a tank's data such as spawn location, controls, etc. 
+ * It also keeps track of a tank's bullets and life using arrayLists. 
+ * 
+ * Methods from Airstrike.PlayerPlane.java
+ * Modified to work for Tank Wars.
+ * 
+ * @author Albert Du
+ * @date July 25, 2017
+ * IDE: Netbeans 8.2
  */
 package tankgame;
 
@@ -24,7 +27,7 @@ public class Tank extends GameObject{
     private boolean bulletPowerUp;     
     private int spawnCD = 0, health, lives, ID; // Start: 3 lives, 1 health per life.
     private int spawnX, spawnY;                 // Spawn point.
-    private int centerX = 20, centerY = 18;     // Center of tank image. 
+    private int centerX = 20, centerY = 18;     // Distance to center of tank image. 
     private int angle = 0, fireCooldown, fireRate;       
     
     // Command keys.
@@ -34,6 +37,8 @@ public class Tank extends GameObject{
     private Image normalBullet, fastBullet, heartImg; 
     private ArrayList<Bullet> myBulletList;
     private ArrayList<GameObject> hearts;
+    
+    // Used for explosions. 
     private String soundFileName;
     private Sound sound;
     
@@ -43,7 +48,7 @@ public class Tank extends GameObject{
         this.ID = ID;
         this.health = 1;
         this.lives = lives;
-        this.fireRate = 60;
+        this.fireRate = 65;
         
         boom = false;
         bulletPowerUp = false;
@@ -71,14 +76,16 @@ public class Tank extends GameObject{
             System.out.println("Tank class: Resource not found");
         }
         
+        // Player 1's tank will spawn at the top left corner.
         if(this.ID == 1) {
             for(int i = 0; i < this.lives; i++) {
-                hearts.add(new GameObject(heartImg, i * 32, 545, 0));
+                hearts.add(new GameObject(heartImg, i * 32, 545, 0) {});
             }
         }
+        // Player 2's tank will spawn at the bottom right corner.
         else if(this.ID == 2) {
             for(int i = 0; i < this.lives; i++) {
-                hearts.add(new GameObject(heartImg, 865 - (i * 32), 545, 0));
+                hearts.add(new GameObject(heartImg, 865 - (i * 32), 545, 0) {});
             }
         }
     } 
@@ -112,6 +119,10 @@ public class Tank extends GameObject{
         }
     }
     
+    /**
+     * The addExplosion() method is called once a tank hits 0 health.
+     * An explosion will occur at the tank's location upon death. 
+     */
     public void addExplosion() {
         TankGame.explosions.add(new Explosions(x, y, TankGame.bigExplosion));
     }
@@ -119,16 +130,23 @@ public class Tank extends GameObject{
     public ArrayList<Bullet> getBulletList(){
          return this.myBulletList;
     } 
-
+    
+    /**
+     * addHeart() is called when a player receives a red life power up.
+     * An additional heart will be drawn to represent the additional life. 
+     */
     public void addHeart() {
         if(this.ID == 1) {
-            hearts.add(new GameObject(heartImg, hearts.size() * 32, 545, 0));            
+            hearts.add(new GameObject(heartImg, hearts.size() * 32, 545, 0) {});            
         }
         else if(this.ID == 2) { 
-            hearts.add(new GameObject(heartImg, 865 - (hearts.size() * 32), 545, 0));
+            hearts.add(new GameObject(heartImg, 865 - (hearts.size() * 32), 545, 0) {});
         }
     }
-    
+
+    /**
+     * removeHeart() is called once a tank's health reaches 0.
+     */
     public void removeHeart() {
         hearts.remove(hearts.size() - 1);
     } 
@@ -163,8 +181,8 @@ public class Tank extends GameObject{
     
     /**
      * Redraws tank on the game window. 
-     * @param obs
-     * @param g2d
+     * @param obs Tank. 
+     * @param g2d Tank drawn on g2d. 
      */
     @Override
     public void draw(ImageObserver obs, Graphics2D g2d) {
@@ -185,20 +203,21 @@ public class Tank extends GameObject{
             // Credit to JavaTutorials101 on YouTube for rotation algorithm. 
             // https://www.youtube.com/watch?v=vHfGiTFWoc4&t=222s        
             BufferedImage bimg = (BufferedImage) img;
-            double rotationRequired = Math.toRadians(-6 * angle);        
+            double rotationRequired = Math.toRadians(-6 * angle);   // had to use -6 instead of 6 to work.       
             
             AffineTransform at = AffineTransform.getTranslateInstance(x, y);
             at.rotate(rotationRequired, bimg.getWidth() / 2, bimg.getHeight() / 2);        
             g2d.drawImage(bimg, at, obs);
         }
         
-        // Case 3: Tank has lives, but no health. Respawn.
+        // Case 3: Tank has no health, but still has lives. 
         else if(boom == true && lives > 0 && spawnCD == 0) {
-            // add explosoion image.
+            // Remove a life and any bullet powerup. Set respawn timer.
             spawnCD = 150;
             bulletPowerUp = false;
             lives--;
             
+            // Respawn only if tank still has lives. 
             if(lives >= 0) {
                 boom = false;
                 
@@ -273,6 +292,13 @@ public class Tank extends GameObject{
         }
     }
     
+    /**
+     * updatePosition() changes the tank's location depending on the 
+     * angle and movement key pressed. 
+     * 
+     * Left and Right movement keys rotate the tank.
+     * Up and Down movement keys move the tank forward and backward. 
+     */
     public void updatePosition(){
         // Rotates tank left (counter-clockwise).
         if (moveLeft == true) {
@@ -284,8 +310,6 @@ public class Tank extends GameObject{
             angle -= 1;
 	}
                 
-        // Allows tank to move NW/NE/SW/SE depending on the 
-        // tank's angle and move key pressed.
 	if (moveUp == true) {
             x += speed * Math.cos(Math.toRadians(6 * angle));
             y -= speed * Math.sin(Math.toRadians(6 * angle));

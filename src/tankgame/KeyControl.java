@@ -1,7 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * KeyControl.java
+ * 
+ * The KeyControl class is used to receive keyboard events
+ * 
+ * @author Albert Du
+ * @date July 25, 2017
+ * IDE: NetBeans 8.2
  */
 package tankgame;
 

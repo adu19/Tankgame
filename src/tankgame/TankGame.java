@@ -1,17 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- *
- * @author Albert
- */
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * TankGame.java
+ * 
+ * Description: 
+ * Tank Wars is a two player tank shooter game. Each player starts with 3 lives.
+ * Lives are represented by hearts at the bottom of the game window. 
+ * Tanks have 1 health per life and die upon being hit by a bullet (one-hit, dead). 
+ * The game ends once either player runs out of lives. 
+ * 
+ * Controls:
+ * Player 1 : WASD movement, SPACE to fire.
+ * Player 2 : Arrow key movement (number pad arrow keys also work), ENTER to fire. 
+ * 
+ * Power Ups: 
+ * Green bullet power ups and red health power ups will spawn during the game. 
+ * Green bullets allow players to fire faster traveling bullets. 
+ * 
+ * Red life power ups grant 1 additional life. Only 2 red life power ups
+ * will spawn over the duration of the game. 
+ * 
+ * @author Albert Du
+ * @date July 25, 2017
+ * IDE: NetBeans 8.2
  */
 package tankgame;
 
@@ -32,28 +41,31 @@ public class TankGame extends JApplet implements Runnable{
     public static GameEvents gameEvent1, gameEvent2;    // Will observe the two players' tanks.   
     public static Tank player1, player2;  
     public int playerID1 = 1, playerID2 = 2, buffTimer = 1;
-    private String winMsg, loseMsg;                     // Display on game over screen. 
-    private boolean cleared, buffSpawned;
+    private String winMsg, loseMsg; // Display on game over screen. 
+    private boolean cleared;        // Determines if game window cleared before drawing game over screen.
     
     Image background, tankP1, tankP2, normalBullet, fastBullet, strongWall, weakWall, end,
                     healthBuff;
     BufferedImage life;
-    static Image[] bigExplosion = new Image[7];
+    
+    // Stores explosion animations. 
+    static Image[] bigExplosion = new Image[7];    
     static Image[] smallExplosion = new Image[6];
+    
     private BufferedImage bimg;
     Graphics2D g2;
  
-    boolean gameOver = false;   // Game ends when either player is out of lives.
+    boolean gameOver = false;  
     CollisionDetector CD;
     Sound sp;  
-    public InputStream wallMap;
+    public InputStream wallMap; // Game map drawn from a text file.
     
     static ArrayList<Explosions> explosions = new ArrayList<Explosions>(100000);
     static ArrayList<Wall> wall = new ArrayList<Wall>();
     static ArrayList<PowerUp> powerUps = new ArrayList<PowerUp>();  
     
     int width = 900, height = 605;  
-    private Dimension contentWindowSize;   // Real size of the content window: 884 x 566. 
+    private Dimension contentWindowSize;   // Real size of the content window. 
     
     @Override
     public void init() {
@@ -87,11 +99,12 @@ public class TankGame extends JApplet implements Runnable{
             smallExplosion[3] = ImageIO.read(this.getClass().getClassLoader().getResource(("Resources/Explosion_small4.png")));
             smallExplosion[4] = ImageIO.read(this.getClass().getClassLoader().getResource(("Resources/Explosion_small5.png")));
             smallExplosion[5] = ImageIO.read(this.getClass().getClassLoader().getResource(("Resources/Explosion_small6.png")));
-
-            // WASD movement. C fire.
+            
+            // Both tanks have 3 lives and a movement speed of 4. 
+            // WASD movement. Space fire.
             player1 = new Tank(tankP1, 3, 35, 35, 4, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_SPACE, playerID1);
 
-            // IJKL Movement. N fire.
+            // Arrow movement. Enter fire.
             player2 = new Tank(tankP2, 3, 795, 475, 4, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_ENTER, playerID2);
          
             if(player1 == null)
@@ -104,7 +117,8 @@ public class TankGame extends JApplet implements Runnable{
             gameEvent2 = new GameEvents();
             gameEvent1.addObserver(player1);
             gameEvent2.addObserver(player2); 
-        
+            
+            // Key listener for the two tanks. 
             KeyControl key1 = new KeyControl(gameEvent1);
             KeyControl key2 = new KeyControl(gameEvent2);
             addKeyListener(key1);  
@@ -122,7 +136,7 @@ public class TankGame extends JApplet implements Runnable{
     
     @Override 
     /**
-     * Cited from Airstrike.GameWorld.java
+     * Start() and run() cited from Airstrike.GameWorld.java
      */
     public void start() {
         thread = new Thread(this);
@@ -130,10 +144,7 @@ public class TankGame extends JApplet implements Runnable{
         thread.start();
     }
     
-    @Override
-    /**
-     * Cited from Airstrike.GameWorld.java
-     */    
+    @Override  
     public void run() {
         Thread me = Thread.currentThread();
         
@@ -158,6 +169,7 @@ public class TankGame extends JApplet implements Runnable{
             g2 = bimg.createGraphics();
         }
         
+        // Continues drawing the game until it ends. 
         if(gameOver == false) {
             drawDemo();
             g.drawImage(bimg, 0, 0, this);  // this is imageObserver.
@@ -168,7 +180,6 @@ public class TankGame extends JApplet implements Runnable{
                 cleared = true;
             }
             
-            // g.drawImage(end, 0, 0, this);
             g.setFont(new Font("TimesRoman", Font.BOLD, 28));
             g.drawString(winMsg, 365, 245);
             g.drawString(loseMsg, 365, 295);            
@@ -179,26 +190,31 @@ public class TankGame extends JApplet implements Runnable{
 
         drawBackGroundWithTileImage();        
 
-        // Check for collisions.
+        // Collision detection between game objects. 
         CD.playerVSPlayer(player1, player2);
         CD.playerVSBullet(player1, player2);
         CD.playerVSWall(player1, player2);
         CD.playerVSPowerUp(player1, player2);
         CD.bulletVSWall(player1, player2);
         
+        
+        // Spawns bullet power ups in intervals indefinitely. 
         if(buffTimer % 700 == 0) {           
             powerUps.add(new PowerUp(fastBullet, 350, 250, 0, 1));                          
-        }  
-        
+        }          
         if((buffTimer % 700) == 0 && (buffTimer >= 2800)) {
             powerUps.add(new PowerUp(fastBullet, 435, 290, 0, 1));
         }
         
-        if((buffTimer % 1200 == 0) && (buffTimer <= 2400)) {
+        // Only spawn 2 health powerups for the entire game.
+        if((buffTimer % 1200 == 0) && (buffTimer <= 1201)) {
             powerUps.add(new PowerUp(healthBuff, 520, 250, 0, 2)); 
+        }        
+        if((buffTimer % 2400 == 0) && (buffTimer > 2399) && (buffTimer < 2501)) {
+            powerUps.add(new PowerUp(healthBuff, 435, 225, 0, 2));
         }
         
-        // Spawn bullet and health powerUps. 
+        // Draw bullet and health powerUps. 
         if(!powerUps.isEmpty()) {
             
             for(int i = 0; i < powerUps.size(); i++) {
@@ -206,7 +222,7 @@ public class TankGame extends JApplet implements Runnable{
                     powerUps.remove(i--);
                 }
                 else {
-                    powerUps.get(i).draw(this, g2);                    
+                    powerUps.get(i).draw(this, g2);
                 }
             }
         }
@@ -229,7 +245,7 @@ public class TankGame extends JApplet implements Runnable{
                 player2.getHearts().get(i).draw(this, g2);
             }
         }
-        // Update the bullet list for both players. 
+        // Updates the bullet list for both players. 
         if(!player1.getBulletList().isEmpty()) {
             for(int i = 0; i < player1.getBulletList().size(); i++) {
                 if(player1.getBulletList().get(i).getShow()) {
@@ -260,6 +276,8 @@ public class TankGame extends JApplet implements Runnable{
         player2.draw(this, g2);
         player2.updatePosition();
         
+        // Explosion removed from arrayList after it's done. Won't be drawn
+        // after being removed. 
         if(!explosions.isEmpty()) {
             for(int i = 0; i < explosions.size(); i++) {
                 if(explosions.get(i).getFinished()) {
@@ -271,14 +289,14 @@ public class TankGame extends JApplet implements Runnable{
                 }                
             }
         }
-
+        
         if(!explosions.isEmpty()) {
             for(int i = 0; i < explosions.size(); i++){
                 explosions.get(i).draw(this, g2);
             }
         }
         
-        // Draw mini map.
+        // Draws mini map on the top right corner of the game window.  
         Image miniMap = bimg.getScaledInstance(300, 300, Image.SCALE_FAST);
         g2.drawImage(miniMap, (contentWindowSize.width) - 180, 3, 190, 190, this);
 
@@ -295,9 +313,7 @@ public class TankGame extends JApplet implements Runnable{
             loseMsg = "Player 2 loses!";            
         } 
         
-        buffTimer++;
-        
-        
+        buffTimer++;        
     }    
 
     private void drawBackGroundWithTileImage() {
@@ -316,12 +332,20 @@ public class TankGame extends JApplet implements Runnable{
         }
     }
 
+    /**
+     * The mapWalls() method reads a text file to draw walls on the game window.
+     * Text file for this game is WallMap.txt.
+     * 0 - Draw nothing. 
+     * 1 - Draw strong, unbreakable walls.
+     * 2 - Draw weak, breakable walls. 
+     */
     private void mapWalls() {
         BufferedReader line = new BufferedReader(new InputStreamReader(wallMap));
         String currentLine;
         int position = 0;
         
         try {
+            // Reads all characters on each line and map walls accordingly. 
             while ((currentLine = line.readLine()) != null) {
                 for(int i = 0; i < currentLine.length(); i++) {
                     if(currentLine.charAt(i) == '1') {

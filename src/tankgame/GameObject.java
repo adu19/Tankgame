@@ -1,12 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
+ * GameObject.java
+ * 
+ * Keeps track of data shared by all objects in Tank Wars.
+ * This includes location and speed.
+ * 
+ * Citing Airstrike.GameObject.java
  *
- * @author Albert
+ * @author Albert Du
+ * @date July 25, 2017
+ * IDE: NetBeans 8.2
  */
 package tankgame;
 
@@ -17,14 +19,11 @@ import java.awt.image.ImageObserver;
 import java.util.Observable;
 import java.util.Observer;
 
-/**
- * Citing Airstrike.GameObject.java
- */
 public class GameObject implements Observer{
-    // Icon for game object. 
+    // Sprite for game object. 
     protected Image img;
    
-    // x,y coord, size of object, and speed.
+    // (x,y) coord, size of object, and speed.
     protected int x, y, height, width, speed;      
     
     // Game object exploding.
@@ -68,7 +67,5 @@ public class GameObject implements Observer{
     }    
 
     @Override
-    public void update(Observable o, Object arg) {
-
-    }
+    public void update(Observable o, Object arg) {}
 }

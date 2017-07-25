@@ -1,7 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Explosions.java 
+ * 
+ * This class stores Explosion objects. 
+ * Explosions are a series of images stored in an Image array.
+ * Explosion objects are added to an ArrayList in TankGame.java and 
+ * Explosions are drawn whenever a bullet hits a tank or wall.
+ * 
+ * Cited from Airstrike.Explosions.java
+ * 
+ * @author Albert Du
+ * @date July 25, 2017
+ * IDE: NetBeans 8.2
  */
 package tankgame;
 
@@ -30,6 +39,10 @@ public class Explosions {
     public boolean getFinished(){
         return this.finished;
     }
+    
+    /**
+     * Changes which image (or frame) of the explosion will be draw next. 
+     */
     public void update(){
 
         if(count < img.length-1){

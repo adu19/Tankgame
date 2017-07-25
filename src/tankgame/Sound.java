@@ -1,7 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Sound.java
+ * 
+ * The sound class stores data for two types of sounds: sounds that loop
+ * continuously and sounds that only play once.
+ * 
+ * Cited from Airstrike.SoundPlayer.java
+ * 
+ * @author Albert Du
+ * @date July 25, 2017
+ * IDE: NetBeans 8.2 
  */
 package tankgame;
 
@@ -11,25 +18,21 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
-/**
- *
- * @author Albert
- */
 public class Sound {
     private AudioInputStream soundStream;
-    private String soundFile;
-    private Clip clip;
+    private String soundFileName;
+    private Clip clip; 
     
-    // 1 - sounds that play continuously.
-    // 2 - sounds that play once. 
+    // Type 1: sounds that loop.
+    // Type 2: sounds that play only once.
     private int type;
 
-    public Sound(int type, String soundFile) {
-        this.soundFile = soundFile;
+    public Sound(int type, String soundFileName) {
+        this.soundFileName = soundFileName;
         this.type = type;
         
         try {
-            soundStream = AudioSystem.getAudioInputStream(Sound.class.getClassLoader().getResource(soundFile));
+            soundStream = AudioSystem.getAudioInputStream(Sound.class.getClassLoader().getResource(soundFileName));
             clip = AudioSystem.getClip();
             clip.open(soundStream);            
         }
