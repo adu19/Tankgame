@@ -298,6 +298,9 @@ public class Tank extends GameObject{
      * 
      * Left and Right movement keys rotate the tank.
      * Up and Down movement keys move the tank forward and backward. 
+     * 
+     * Cited from: http://www.java-gaming.org/index.php?topic=29407.0
+     * Modified to work for Tank Wars.
      */
     public void updatePosition(){
         // Rotates tank left (counter-clockwise).
