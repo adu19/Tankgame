@@ -23,10 +23,7 @@
 
 package tankgame;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Rectangle;
-import javax.imageio.ImageIO;
 
 public class CollisionDetector {
     GameEvents gameEvent1, gameEvent2;

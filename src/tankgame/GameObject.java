@@ -54,7 +54,7 @@ public class GameObject implements Observer{
     public void setY(int y){
         this.y = y;
     }  
-     
+    
     public int getWidth() {
         return this.width;
     }
@@ -64,7 +64,8 @@ public class GameObject implements Observer{
     
      public void draw(ImageObserver obs, Graphics2D g2d){
          g2d.drawImage(img, x, y, obs);    
-    }    
+    }
+     
 
     @Override
     public void update(Observable o, Object arg) {}

@@ -16,8 +16,8 @@ import java.awt.image.ImageObserver;
 
 public class Wall extends GameObject {
     boolean breakable;
-    private int width, height, respawnCD;    // Breakable walls can respawn.
-    private String soundFileName;           // Explosion sound.
+    private int respawnCD;    // Breakable walls can respawn.
+    private final String soundFileName;           // Explosion sound.
     Sound sound;    
     
     public Wall(Image img, int x, int y, boolean weak) {

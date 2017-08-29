@@ -22,13 +22,11 @@ import java.awt.image.ImageObserver;
 public class PowerUp extends GameObject{
     boolean show = false;
     int type;
-    int time;
     
     public PowerUp(Image img, int x, int y, int speed, int type) {
         super(img, x, y, speed);
         this.show = true;
         this.type = type;
-        this.time = time;
     }
 
     public void setShow(boolean show) {
