@@ -1,6 +1,6 @@
 /**
  * Bullet.java
- * 
+ * }
  * Bullet objects are stored within a tank's bullet ArrayList. Bullets are drawn 
  * when a tank fires.
  * 
